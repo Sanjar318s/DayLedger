@@ -1,3 +1,5 @@
+ALTER TABLE avatar_frames ADD CONSTRAINT avatar_frames_name_unique UNIQUE (name);
+
 INSERT INTO avatar_frames (name, description, required_achievements, css_style) VALUES
   ('Серая', 'Базовая рамка', 0, 'border: 3px solid #9e9e9e; box-shadow: 0 0 12px rgba(158,158,158,0.7);'),
   ('Зелёная', '3 достижения', 3, 'border: 3px solid #4caf50; box-shadow: 0 0 12px rgba(76,175,80,0.8);'),
