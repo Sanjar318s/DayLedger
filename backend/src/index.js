@@ -37,8 +37,12 @@ app.use(
 );
 
 const prodOrigin = process.env.CLIENT_URL || 'https://useful-notes-ai.vercel.app';
+const extraOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map(s => s.trim()).filter(Boolean)
+  : [];
 const allowedOrigins = [
   prodOrigin,
+  ...extraOrigins,
   ...(process.env.NODE_ENV !== 'production' ? [
     'http://localhost:5173',
     'http://localhost:5174',
