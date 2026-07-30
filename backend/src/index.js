@@ -36,7 +36,7 @@ app.use(
   })
 );
 
-const prodOrigin = process.env.CLIENT_URL || 'https://useful-notes-ai.vercel.app';
+const prodOrigin = process.env.CLIENT_URL || 'https://frontend-taupe-zeta-tlgbbayryo.vercel.app';
 const extraOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map(s => s.trim()).filter(Boolean)
   : [];
