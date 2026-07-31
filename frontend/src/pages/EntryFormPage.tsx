@@ -236,6 +236,8 @@ export default function EntryFormPage() {
       } else {
         await createEntry(payload);
       }
+      // Invalidate entries queries to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['entries'] });
       lastDescriptionRef.current = description;
       userInputRef.current = description;
       navigate('/');

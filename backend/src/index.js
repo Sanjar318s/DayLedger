@@ -25,6 +25,7 @@ const profileRoutes = require('./routes/profile');
 const achievementsRoutes = require('./routes/achievements');
 const debugRoutes = require('./routes/debug');
 const framesRoutes = require('./routes/frames');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const server = http.createServer(app);
@@ -94,6 +95,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/achievements', achievementsRoutes);
 app.use('/api/debug', debugRoutes);
 app.use('/api/frames', framesRoutes);
+app.use('/api/admin', adminRoutes);
 
 setupSocket(io);
 startScheduler();

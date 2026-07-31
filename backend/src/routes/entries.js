@@ -40,8 +40,8 @@ router.get('/', async (req, res) => {
   const { from, to, category_id } = req.query;
   let query = 'SELECT * FROM entries WHERE user_id = $1';
   const params = [req.user.id];
-  if (from) { params.push(from); query += ` AND event_at >= $${params.length}`; }
-  if (to) { params.push(to); query += ` AND event_at <= $${params.length}`; }
+  if (from) { params.push(from); query += ` AND event_at >= $${params.length}::date`; }
+  if (to) { params.push(to); query += ` AND event_at < ($${params.length}::date + interval '1 day')`; }
   if (category_id) {
     params.push(category_id);
     query += ` AND category_id = $${params.length}`;

@@ -12,6 +12,7 @@ import SettingsCategories from './pages/SettingsCategories';
 import SettingsLanguage from './pages/SettingsLanguage';
 import SettingsAccount from './pages/SettingsAccount';
 import SettingsSound from './pages/SettingsSound';
+import AdminSettingsPage from './pages/AdminSettingsPage';
 import FriendsPage from './pages/FriendsPage';
 import ChatPage from './pages/ChatPage';
 import SharedEntriesPage from './pages/SharedEntriesPage';
@@ -88,6 +89,7 @@ export default function App() {
               <Route path="language" element={<SettingsLanguage />} />
               <Route path="account" element={<SettingsAccount />} />
               <Route path="sound" element={<SettingsSound />} />
+              <Route path="admin" element={<motion.div {...pageTransition}><AdminSettingsPage /></motion.div>} />
               <Route index element={<Navigate to="reports" replace />} />
             </Route>
           </Route>
