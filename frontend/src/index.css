@@ -136,6 +136,21 @@
   animation: frameShimmer 4s ease-in-out infinite;
 }
 
+/* ============ PERFORMANCE MODE (weak devices) ============ */
+/* Отключает тяжёлые 3D-подобные и бесконечные декоративные анимации */
+[data-perf="true"] .auth-bg-blob,
+[data-perf="true"] .auth-logo,
+[data-perf="true"] .skeleton,
+[data-perf="true"] .animate-float,
+[data-perf="true"] .animate-glow,
+[data-perf="true"] .animate-card-glow,
+[data-perf="true"] .animate-tumble,
+[data-perf="true"] .frame-glow-ring,
+[data-perf="true"] .frame-rotating-accent,
+[data-perf="true"] .frame-shimmer-overlay::after {
+  animation: none !important;
+}
+
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export type PerfMode = 'auto' | 'on' | 'off';
 
@@ -32,6 +32,15 @@ export function usePerfMode() {
   const [weakDevice] = useState(detectWeakDevice);
 
   const reducedMotion = mode === 'on' || (mode === 'auto' && weakDevice);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (reducedMotion) {
+      root.setAttribute('data-perf', 'true');
+    } else {
+      root.removeAttribute('data-perf');
+    }
+  }, [reducedMotion]);
 
   const setPerfMode = useCallback((m: PerfMode) => {
     setMode(m);
