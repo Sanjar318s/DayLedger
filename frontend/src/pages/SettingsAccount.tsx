@@ -6,6 +6,7 @@ import { getProfile, updateVisibilitySettings } from '../api/profile';
 import { getFrames, setActiveFrame, getActiveFrame } from '../api/frames';
 import { parseCss } from '../utils/cssParser';
 import { useLocale } from '../context/LocaleContext';
+import { usePerfMode, PerfMode } from '../hooks/usePerfMode';
 import AvatarCropper from '../components/AvatarCropper';
 import Avatar from '../components/Avatar';
 import { motion } from 'framer-motion';
@@ -38,6 +39,7 @@ function getAccentColor(color: string): string {
 export default function SettingsAccount() {
   const { user, setUser } = useAuth();
   const { t } = useLocale();
+  const { perfMode, weakDevice, setPerfMode } = usePerfMode();
   const queryClient = useQueryClient();
 
   const [nickname, setNickname] = useState(user?.nickname || '');
@@ -171,6 +173,31 @@ export default function SettingsAccount() {
             {t('change')}
           </button>
         </form>
+      </motion.div>
+
+      <motion.div {...fadeUp} className="py-6">
+        <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">⚡ {t('perfMode')}</h3>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 w-fit">
+            {(['auto', 'on', 'off'] as PerfMode[]).map((m) => (
+              <button
+                key={m}
+                onClick={() => setPerfMode(m)}
+                className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                  perfMode === m
+                    ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                }`}
+              >
+                {m === 'auto' ? t('perfModeAuto') : m === 'on' ? t('perfModeOn') : t('perfModeOff')}
+              </button>
+            ))}
+          </div>
+          {weakDevice && (
+            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">⚠️ {t('perfModeWeakDevice')}</span>
+          )}
+        </div>
+        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{t('perfModeHint')}</p>
       </motion.div>
 
       {message && (

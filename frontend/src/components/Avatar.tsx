@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getActiveFrame } from '../api/frames';
 import { parseCss } from '../utils/cssParser';
+import { usePerfMode } from '../hooks/usePerfMode';
 import { motion } from 'framer-motion';
 
 function extractBorderColor(css: string): string {
@@ -22,6 +23,8 @@ interface Props {
 }
 
 export default function Avatar({ avatarUrl, nickname, email, size = 36, showFrame = true, frameCss, gameGlow = true }: Props) {
+  const { reducedMotion } = usePerfMode();
+
   const { data: activeFrame } = useQuery({
     queryKey: ['activeFrame'],
     queryFn: () => getActiveFrame().then(res => res.data),
@@ -66,15 +69,15 @@ export default function Avatar({ avatarUrl, nickname, email, size = 36, showFram
           ? `${frameStyle.boxShadow || ''}${frameStyle.boxShadow ? ', ' : ''}${glowShadows}`
           : (frameStyle.boxShadow || undefined),
       }}
-      whileHover={{ scale: 1.05 }}
-      animate={hasFrame && gameGlow && color ? {
+      whileHover={reducedMotion ? undefined : { scale: 1.05 }}
+      animate={!reducedMotion && hasFrame && gameGlow && color ? {
         boxShadow: [
           `${frameStyle.boxShadow || ''}${frameStyle.boxShadow ? ', ' : ''}0 0 12px 4px ${color}66, 0 0 30px 8px ${color}33`,
           `${frameStyle.boxShadow || ''}${frameStyle.boxShadow ? ', ' : ''}0 0 20px 8px ${color}88, 0 0 50px 16px ${color}44`,
           `${frameStyle.boxShadow || ''}${frameStyle.boxShadow ? ', ' : ''}0 0 12px 4px ${color}66, 0 0 30px 8px ${color}33`,
         ],
       } : undefined}
-      transition={hasFrame && gameGlow && color ? {
+      transition={!reducedMotion && hasFrame && gameGlow && color ? {
         duration: 2.5,
         repeat: Infinity,
         ease: 'easeInOut',

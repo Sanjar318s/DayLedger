@@ -315,6 +315,12 @@ export const translations = {
     resetPasswordHint: 'Старый пароль восстановить нельзя (bcrypt необратим). Укажите новый пароль.',
     adminBadge: 'Админ',
     googleAccount: 'Google',
+    perfMode: 'Экономия',
+    perfModeAuto: 'Авто',
+    perfModeOn: 'Вкл',
+    perfModeOff: 'Выкл',
+    perfModeWeakDevice: 'Обнаружено слабое устройство',
+    perfModeHint: 'Отключает тяжёлые анимации для слабых устройств. «Авто» включает их на слабых телефонах и при системной настройке «уменьшить движение».',
   },
   uz: {
     login: 'Kirish',
@@ -632,6 +638,12 @@ export const translations = {
     resetPasswordHint: "Eski parolni tiklash mumkin emas (bcrypt qaytarilmas). Yangi parol kiriting.",
     adminBadge: 'Admin',
     googleAccount: 'Google',
+    perfMode: 'Tejamkorlik',
+    perfModeAuto: 'Avto',
+    perfModeOn: 'Yoqilgan',
+    perfModeOff: "O'chirilgan",
+    perfModeWeakDevice: 'Zaif qurilma aniqlandi',
+    perfModeHint: "Og'ir animatsiyalarni kuchsiz qurilmalar uchun o'chiradi. 'Avto' kuchsiz telefonlarda va tizimning 'harakatni kamaytirish' sozlamasida yoqiladi.",
   },
   en: {
     login: 'Login',
@@ -949,6 +961,12 @@ export const translations = {
     resetPasswordHint: 'The old password cannot be recovered (bcrypt is one-way). Set a new password.',
     adminBadge: 'Admin',
     googleAccount: 'Google',
+    perfMode: 'Power saving',
+    perfModeAuto: 'Auto',
+    perfModeOn: 'On',
+    perfModeOff: 'Off',
+    perfModeWeakDevice: 'Weak device detected',
+    perfModeHint: 'Disables heavy animations for weak devices. "Auto" enables on weak phones and when the system "reduce motion" setting is on.',
   },
 };
 

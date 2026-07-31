@@ -1,4 +1,5 @@
 import { Outlet, useLocation, NavLink } from 'react-router-dom';
+import { Suspense } from 'react';
 import { useLocale } from '../context/LocaleContext';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../hooks/useAuth';
@@ -80,7 +81,15 @@ export default function SettingsPage() {
 
           <main className="flex-1 min-w-0 max-w-full lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto">
             <div className="card p-4 sm:p-6 w-full min-w-0">
-              <Outlet />
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center min-h-[200px]">
+                    <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                }
+              >
+                <Outlet />
+              </Suspense>
             </div>
           </main>
         </div>
