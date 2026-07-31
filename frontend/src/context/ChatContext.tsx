@@ -37,13 +37,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [replyingToMessage, setReplyingToMessage] = useState<Message | null>(null);
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
 
-  // Запрос разрешения на уведомления
-  useEffect(() => {
-    if (Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, []);
-
   useEffect(() => {
     if (!user) return;
     const socket = getSocket(user.id);
@@ -69,7 +62,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
           if (Notification.permission === 'granted') {
             new Notification('DayLedger', {
               body: msg.text,
-              icon: '/favicon.ico',
+              icon: '/icons/icon-192.png',
               silent: false,
             });
           }

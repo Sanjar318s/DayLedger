@@ -1,7 +1,8 @@
 const express = require('express');
 const pool = require('../db');
 const authenticateToken = require('../middleware/auth');
-const { notifyUser } = require('../socket');
+const { notifyUser, isUserOnline } = require('../socket');
+const { sendPushNotification } = require('../services/pushNotifications');
 
 const router = express.Router();
 router.use(authenticateToken);
@@ -38,6 +39,15 @@ router.post('/:entryId', async (req, res) => {
       entry_title: entry.rows[0].title,
       from_public_id: owner.rows[0].public_id,
     });
+
+    if (!isUserOnline(friendId)) {
+      await sendPushNotification(friendId, {
+        title: 'Доступ к записи',
+        body: entry.rows[0].title || 'Запись',
+        url: '/shared',
+        tag: 'share_invite',
+      });
+    }
 
     res.status(201).json({ message: 'Share invite sent' });
   } catch (err) {

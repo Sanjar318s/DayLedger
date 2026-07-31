@@ -3,6 +3,7 @@ const pool = require('../db');
 const authenticateToken = require('../middleware/auth');
 const { notifyUser, isUserOnline } = require('../socket');
 const { checkAchievements } = require('../services/achievements');
+const { sendPushNotification } = require('../services/pushNotifications');
 
 const router = express.Router();
 router.use(authenticateToken);
@@ -52,6 +53,17 @@ router.post('/request', async (req, res) => {
       from_public_id: senderData.rows[0].public_id,
       from_nickname: senderData.rows[0].nickname,
     });
+
+    if (!isUserOnline(receiverId)) {
+      const sender = senderData.rows[0] || {};
+      const senderName = sender.nickname || ('#' + (sender.public_id || '')).trim();
+      await sendPushNotification(receiverId, {
+        title: 'Заявка в друзья',
+        body: `${senderName || 'Кто-то'} хочет добавить вас в друзья`,
+        url: '/friends',
+        tag: 'friend_request',
+      });
+    }
 
     res.status(201).json({ message: 'Friend request sent' });
   } catch (err) {

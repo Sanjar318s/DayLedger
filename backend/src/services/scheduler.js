@@ -12,9 +12,12 @@ async function checkReminders() {
     );
     for (const entry of result.rows) {
       // send push
+      const time = new Date(entry.event_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
       await sendPushNotification(entry.user_id, {
         title: 'Напоминание',
-        body: `${entry.title} в ${new Date(entry.event_at).toLocaleTimeString()}`,
+        body: `${entry.title} в ${time}`,
+        url: '/',
+        tag: 'reminder',
       });
       await pool.query('UPDATE entries SET notified = true WHERE id = $1', [entry.id]);
     }

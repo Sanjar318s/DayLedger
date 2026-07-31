@@ -5,15 +5,6 @@ import { useToast } from '../context/ToastContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { Friend } from '../api/friends';
 
-// Запрос разрешения на уведомления при первом вызове
-let permissionRequested = false;
-const requestNotificationPermission = async () => {
-  if (!permissionRequested && Notification.permission === 'default') {
-    await Notification.requestPermission();
-  }
-  permissionRequested = true;
-};
-
 export const useSocketEvents = () => {
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -38,7 +29,7 @@ export const useSocketEvents = () => {
       if (Notification.permission === 'granted') {
         new Notification('DayLedger', {
           body: message,
-          icon: '/favicon.ico',
+          icon: '/icons/icon-192.png',
           silent: false, // будет звук по умолчанию
         });
       }
@@ -63,7 +54,7 @@ export const useSocketEvents = () => {
       if (Notification.permission === 'granted') {
         new Notification('DayLedger', {
           body: message,
-          icon: '/favicon.ico',
+          icon: '/icons/icon-192.png',
           silent: false,
         });
       }
@@ -97,7 +88,7 @@ export const useSocketEvents = () => {
       if (Notification.permission === 'granted') {
         new Notification('DayLedger', {
           body: message,
-          icon: '/favicon.ico',
+          icon: '/icons/icon-192.png',
           silent: false,
         });
       }
@@ -110,9 +101,6 @@ export const useSocketEvents = () => {
     socket.on('messages_read', handleMessagesRead);
     socket.on('entry_updated', handleEntryUpdated);
     socket.on('share_invite', handleShareInvite);
-
-    // Запросить разрешение один раз
-    requestNotificationPermission();
 
     return () => {
       socket.off('friend_request', handleFriendRequest);

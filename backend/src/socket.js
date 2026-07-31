@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const pool = require('./db');
 const { checkAchievements } = require('./services/achievements');
+const { sendPushNotification } = require('./services/pushNotifications');
 
 let io;
 const onlineUsers = new Map(); // userId -> Set<socketId>
@@ -63,6 +64,26 @@ function setupSocket(serverIo) {
         // Доставляем получателю и отправителю
         io.to(`user:${to}`).emit('new_message', message);
         io.to(`user:${senderId}`).emit('new_message', message);
+
+        // Push-уведомление получателю, если он оффлайн
+        if (!isUserOnline(to)) {
+          try {
+            const senderRes = await pool.query(
+              'SELECT public_id, nickname FROM users WHERE id = $1',
+              [senderId]
+            );
+            const sender = senderRes.rows[0] || {};
+            const senderName = sender.nickname || ('#' + (sender.public_id || '')).trim();
+            await sendPushNotification(to, {
+              title: senderName || 'Новое сообщение',
+              body: text,
+              url: '/chat',
+              tag: 'chat',
+            });
+          } catch (err) {
+            console.error('Message push error:', err);
+          }
+        }
       } catch (err) {
         console.error('Message save error:', err);
       }
