@@ -17,3 +17,6 @@ export const getAdminUsers = () => apiClient.get<AdminUser[]>('/admin/users');
 
 export const updateUserPublicId = (userId: string, publicId: string) =>
   apiClient.patch<AdminUser>(`/admin/users/${userId}/public-id`, { public_id: publicId });
+
+export const resetUserPassword = (userId: string, password: string) =>
+  apiClient.patch<{ message: string; password: string }>(`/admin/users/${userId}/password`, { password });

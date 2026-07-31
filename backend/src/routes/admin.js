@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const pool = require('../db');
 const authenticateToken = require('../middleware/auth');
 
@@ -61,6 +62,31 @@ router.patch('/users/:id/public-id', authenticateToken, requireAdmin, async (req
       return res.status(404).json({ error: 'User not found' });
     }
     res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.patch('/users/:id/password', authenticateToken, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+
+  if (!password || typeof password !== 'string') {
+    return res.status(400).json({ error: 'New password is required' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters' });
+  }
+
+  try {
+    const user = await pool.query('SELECT 1 FROM users WHERE id = $1', [id]);
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const hashed = await bcrypt.hash(password, 10);
+    await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hashed, id]);
+    res.json({ message: 'Password reset', password });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });

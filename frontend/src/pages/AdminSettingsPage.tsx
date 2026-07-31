@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocale } from '../context/LocaleContext';
-import { getAdminUsers, updateUserPublicId } from '../api/admin';
+import { getAdminUsers, updateUserPublicId, resetUserPassword } from '../api/admin';
 
 interface User {
   id: string;
@@ -22,6 +22,9 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [resettingId, setResettingId] = useState<string | null>(null);
+  const [resettingEmail, setResettingEmail] = useState('');
+  const [resetValue, setResetValue] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -61,6 +64,34 @@ export default function AdminSettingsPage() {
   const handleCancel = () => {
     setEditingId(null);
     setEditValue('');
+  };
+
+  const handleResetClick = (u: User) => {
+    setResettingId(u.id);
+    setResettingEmail(u.email);
+    setResetValue('');
+    setError('');
+  };
+
+  const handleResetSave = async (id: string) => {
+    if (resetValue.length < 8) {
+      setError(t('passwordTooShort'));
+      return;
+    }
+    try {
+      const res = await resetUserPassword(id, resetValue);
+      setSuccess(`${t('passwordReset')} ${res.data.password}`);
+      setTimeout(() => setSuccess(''), 8000);
+      setResettingId(null);
+      setResetValue('');
+    } catch (err) {
+      setError(t('passwordResetError'));
+    }
+  };
+
+  const handleResetCancel = () => {
+    setResettingId(null);
+    setResetValue('');
   };
 
   if (loading) {
@@ -170,12 +201,20 @@ export default function AdminSettingsPage() {
                         </button>
                       </div>
                     ) : (
-                      <button
-                        onClick={() => handleEditClick(u)}
-                        className="px-2 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
-                      >
-                        {t('edit')}
-                      </button>
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => handleEditClick(u)}
+                          className="px-2 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+                        >
+                          {t('edit')}
+                        </button>
+                        <button
+                          onClick={() => handleResetClick(u)}
+                          className="px-2 py-1 text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg transition-colors"
+                        >
+                          {t('resetPassword')}
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -190,6 +229,37 @@ export default function AdminSettingsPage() {
           </div>
         )}
       </div>
+
+      {resettingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{t('resetPassword')}</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{resettingEmail}</p>
+            <input
+              type="text"
+              value={resetValue}
+              onChange={(e) => setResetValue(e.target.value)}
+              placeholder={t('newPassword')}
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={handleResetCancel}
+                className="px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              >
+                {t('cancel')}
+              </button>
+              <button
+                onClick={() => handleResetSave(resettingId)}
+                className="px-3 py-1.5 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded-lg transition-colors"
+              >
+                {t('save')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

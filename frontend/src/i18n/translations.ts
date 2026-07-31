@@ -300,6 +300,9 @@ export const translations = {
     adminError: 'Ошибка загрузки пользователей',
     adminUpdateError: 'Ошибка обновления',
     adminUpdated: 'ID обновлен',
+    resetPassword: 'Сбросить пароль',
+    passwordReset: 'Пароль сброшен. Новый пароль:',
+    passwordResetError: 'Ошибка сброса пароля',
   },
   uz: {
     login: 'Kirish',
@@ -602,6 +605,9 @@ export const translations = {
     adminError: "Foydalanuvchilarni yuklashda xatolik",
     adminUpdateError: "Yangilashda xatolik",
     adminUpdated: "ID yangilandi",
+    resetPassword: "Parolni tiklash",
+    passwordReset: "Parol tiklandi. Yangi parol:",
+    passwordResetError: "Parolni tiklashda xatolik",
   },
   en: {
     login: 'Login',
@@ -904,6 +910,9 @@ export const translations = {
     adminError: 'Error loading users',
     adminUpdateError: 'Error updating',
     adminUpdated: 'ID updated',
+    resetPassword: 'Reset password',
+    passwordReset: 'Password reset. New password:',
+    passwordResetError: 'Error resetting password',
   },
 };
 
