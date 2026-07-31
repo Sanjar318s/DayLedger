@@ -6,4 +6,5 @@ dist/
 backend/.env
 frontend/.env
 build/
-nulbackend/.railway/
+.env.local
+.vercel/

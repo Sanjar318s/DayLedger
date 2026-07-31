@@ -50,7 +50,7 @@ router.post('/register', async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
     res.cookie('refreshToken', refreshToken, cookieOptions);
-    res.json({ accessToken, user });
+    res.json({ accessToken, refreshToken, user });
   } catch (err) {
     if (err.code === '23505') res.status(409).json({ error: 'Email already exists' });
     else res.status(500).json({ error: 'Server error' });
@@ -69,6 +69,7 @@ router.post('/login', async (req, res) => {
       res.cookie('refreshToken', refreshToken, cookieOptions);
       res.json({
         accessToken,
+        refreshToken,
         user: {
           id: user.id,
           email: user.email,
@@ -89,7 +90,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/refresh', (req, res) => {
-  const token = req.cookies.refreshToken;
+  const token = req.cookies.refreshToken || req.body.refreshToken;
   if (!token) return res.status(401).json({ error: 'Refresh token missing' });
   jwt.verify(token, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
     if (err) return res.status(403).json({ error: 'Invalid refresh token' });
@@ -102,7 +103,7 @@ router.post('/refresh', (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
     res.cookie('refreshToken', refreshToken, cookieOptions);
-    res.json({ accessToken });
+    res.json({ accessToken, refreshToken });
   });
 });
 
@@ -172,7 +173,7 @@ router.get('/google/callback',
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
     res.cookie('refreshToken', refreshToken, cookieOptions);
-    res.redirect(`${process.env.CLIENT_URL}/?accessToken=${accessToken}`);
+    res.redirect(`${process.env.CLIENT_URL}/?accessToken=${accessToken}&refreshToken=${refreshToken}`);
   }
 );
 // ---------------------------------------------------

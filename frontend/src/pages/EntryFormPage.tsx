@@ -12,6 +12,42 @@ import { motion, AnimatePresence } from 'framer-motion';
 const availableCurrencies = ['UZS', 'USD', 'EUR', 'RUB'];
 const currencySymbols: Record<string, string> = { UZS: 'сум', USD: '$', EUR: '€', RUB: '₽' };
 
+interface EntryDraft {
+  title: string;
+  description: string;
+  eventAt: string;
+  remindEnabled: boolean;
+  remindBefore: number;
+  financeEnabled: boolean;
+  amount: string;
+  amountType: 'expense' | 'income';
+  currency: string;
+  categoryId: string;
+  savedAt: number;
+}
+
+function getDraftKey(id?: string) {
+  return id ? `entryDraft:${id}` : 'entryDraft:new';
+}
+
+function loadDraft(key: string): EntryDraft | null {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function clearDraft(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
+}
+
 const pageVariants = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' as const } },
@@ -61,6 +97,40 @@ export default function EntryFormPage() {
   const userInputRef = useRef('');
   const socketRef = useRef(getSocket(user?.id));
   const formRef = useRef<HTMLFormElement>(null);
+  const draftKey = getDraftKey(id);
+  const draftRef = useRef<EntryDraft | null>(null);
+
+  const applyDraft = useCallback((draft: EntryDraft) => {
+    setTitle(draft.title);
+    setDescription(draft.description);
+    if (draft.eventAt) setEventAt(draft.eventAt);
+    setRemindEnabled(draft.remindEnabled);
+    setRemindBefore(draft.remindBefore);
+    setFinanceEnabled(draft.financeEnabled);
+    setAmount(draft.amount);
+    setAmountType(draft.amountType);
+    setCurrency(draft.currency);
+    setCategoryId(draft.categoryId);
+    lastDescriptionRef.current = draft.description;
+    userInputRef.current = draft.description;
+  }, []);
+
+  const flushDraft = useCallback(() => {
+    const draft = draftRef.current;
+    if (!draft) return;
+    const hasContent = draft.title.trim()
+      || draft.description.trim()
+      || draft.financeEnabled
+      || draft.remindEnabled
+      || draft.amount
+      || draft.categoryId;
+    if (!hasContent) return;
+    try {
+      localStorage.setItem(draftKey, JSON.stringify(draft));
+    } catch {
+      // ignore
+    }
+  }, [draftKey]);
 
   const validateField = useCallback((name: string, value: string) => {
     switch (name) {
@@ -122,10 +192,56 @@ export default function EntryFormPage() {
             setCurrency(entry.currency || globalCurrency);
           }
           if (entry.category_id) setCategoryId(entry.category_id);
+
+          const draft = loadDraft(draftKey);
+          const entryUpdatedAt = new Date(entry.updated_at).getTime();
+          if (draft && (!entryUpdatedAt || draft.savedAt > entryUpdatedAt)) {
+            applyDraft(draft);
+          }
         }
       });
     }
-  }, [id, globalCurrency]);
+  }, [id, globalCurrency, draftKey, applyDraft]);
+
+  useEffect(() => {
+    if (!id) {
+      const draft = loadDraft(draftKey);
+      if (draft) applyDraft(draft);
+    }
+  }, [id, draftKey, applyDraft]);
+
+  useEffect(() => {
+    draftRef.current = {
+      title,
+      description,
+      eventAt,
+      remindEnabled,
+      remindBefore,
+      financeEnabled,
+      amount,
+      amountType,
+      currency,
+      categoryId,
+      savedAt: Date.now(),
+    };
+  }, [title, description, eventAt, remindEnabled, remindBefore, financeEnabled, amount, amountType, currency, categoryId]);
+
+  useEffect(() => {
+    const timer = setTimeout(flushDraft, 400);
+    return () => clearTimeout(timer);
+  }, [flushDraft, title, description, eventAt, remindEnabled, remindBefore, financeEnabled, amount, amountType, currency, categoryId]);
+
+  useEffect(() => {
+    const flush = () => flushDraft();
+    window.addEventListener('beforeunload', flush);
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', flush);
+    return () => {
+      window.removeEventListener('beforeunload', flush);
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', flush);
+    };
+  }, [flushDraft]);
 
   useEffect(() => {
     if (!id || description === lastDescriptionRef.current) return;
@@ -238,6 +354,7 @@ export default function EntryFormPage() {
       }
       // Invalidate entries queries to refresh the list
       queryClient.invalidateQueries({ queryKey: ['entries'] });
+      clearDraft(draftKey);
       lastDescriptionRef.current = description;
       userInputRef.current = description;
       navigate('/');
