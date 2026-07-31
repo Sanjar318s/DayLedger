@@ -11,6 +11,7 @@ import EntryList from '../components/EntryList';
 import SharedEntryList from '../components/SharedEntryList';
 import HeroBlock from '../components/HeroBlock';
 import DashboardBackground from '../components/DashboardBackground';
+import { usePerfMode } from '../hooks/usePerfMode';
 import { motion } from 'framer-motion';
 
 const containerVariants = {
@@ -35,6 +36,7 @@ export default function DashboardPage() {
 
   const { t } = useLocale();
   const { categories } = useCategories();
+  const { reducedMotion } = usePerfMode();
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
 
   const { data: entries, isLoading } = useQuery({
@@ -94,8 +96,8 @@ export default function DashboardPage() {
 
   return (
     <>
-      <DashboardBackground />
-      <HeroBlock />
+      {!reducedMotion && <DashboardBackground />}
+      {!reducedMotion && <HeroBlock />}
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
       {/* Header */}
       <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

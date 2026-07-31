@@ -3,6 +3,7 @@ import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { register } from '../api/auth';
 import { useAuth } from '../hooks/useAuth';
+import { usePerfMode } from '../hooks/usePerfMode';
 import { useLocale } from '../context/LocaleContext';
 
 export default function RegisterPage() {
@@ -14,6 +15,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const { user, setUser } = useAuth();
+  const { reducedMotion } = usePerfMode();
   const navigate = useNavigate();
   const { t } = useLocale();
 
@@ -70,9 +72,13 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-indigo-600">
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-[500px] h-[500px] bg-indigo-400 rounded-full blur-3xl opacity-30 animate-[float_8s_ease-in-out_infinite]" />
-        <div className="absolute -bottom-16 -left-16 w-[350px] h-[350px] bg-cyan-400 rounded-full blur-3xl opacity-30 animate-[float_8s_ease-in-out_infinite_2s]" />
-        <div className="absolute top-1/3 left-1/4 w-[200px] h-[200px] bg-emerald-400 rounded-full blur-3xl opacity-20 animate-[float_8s_ease-in-out_infinite_4s]" />
+        {!reducedMotion && (
+          <>
+            <div className="absolute -top-24 -right-24 w-[500px] h-[500px] bg-indigo-400 rounded-full blur-3xl opacity-30 animate-[float_8s_ease-in-out_infinite]" />
+            <div className="absolute -bottom-16 -left-16 w-[350px] h-[350px] bg-cyan-400 rounded-full blur-3xl opacity-30 animate-[float_8s_ease-in-out_infinite_2s]" />
+            <div className="absolute top-1/3 left-1/4 w-[200px] h-[200px] bg-emerald-400 rounded-full blur-3xl opacity-20 animate-[float_8s_ease-in-out_infinite_4s]" />
+          </>
+        )}
       </div>
 
       <main className="flex-1 flex items-center justify-center px-4 py-12 relative z-10">
